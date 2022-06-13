@@ -1,5 +1,6 @@
 const Card = require('../models/Card');
 const CastError = require('../errors/CastError');
+const NotFound = require('../errors/NotFound');
 
 const getCards = async (req, res, next) => {
   try {
@@ -41,9 +42,19 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
-    if (!card) next(new CastError('Карточки не существует'));
+    if (card.length !== 24) {
+      return next(
+        new CastError('Некорреткно указан id карточки'),
+      );
+    }
 
-    await Card.findByIdAndDelete(req.params.cardId);
+    if (!card) {
+      return next(
+        new CastError('Запрашиваемая карточка для удаления не найдена'),
+      );
+    }
+
+    await Card.findOneAndDelete({ _id: req.params.cardId });
 
     return res.status(200).json();
   } catch (e) {
@@ -55,14 +66,20 @@ const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
+    if (card.length !== 24) {
+      return next(
+        new CastError('Некорреткно указан id карточки'),
+      );
+    }
+
     if (!card) {
       return next(
         new CastError('Запрашиваемая карточка для добавления лайка не найдена'),
       );
     }
 
-    await Card.findByIdAndUpdate(
-      req.params.cardId,
+    await Card.findOneAndUpdate(
+      { _id: req.params.cardId },
       { $addToSet: { likes: req.user._id } },
       { new: true },
     );
@@ -77,14 +94,20 @@ const dislikeCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
-    if (!card) {
+    if (card.length !== 24) {
       return next(
-        new CastError('Запрашиваемая карточка для добавления лайка не найдена'),
+        new CastError('Некорреткно указан id карточки'),
       );
     }
 
-    await Card.findByIdAndUpdate(
-      req.params.cardId,
+    if (!card) {
+      return next(
+        new NotFound('Запрашиваемая карточка для добавления лайка не найдена'),
+      );
+    }
+
+    await Card.findOneAndUpdate(
+      { _id: req.params.cardId },
       { $pull: { likes: req.user._id } },
       { new: true },
     );

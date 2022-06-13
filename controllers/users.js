@@ -1,4 +1,5 @@
 const CastError = require('../errors/CastError');
+const NotFound = require('../errors/NotFound');
 
 const User = require('../models/User');
 
@@ -7,7 +8,7 @@ const getUser = async (req, res, next) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return next(new CastError('Пользователь не найден'));
+      return next(new NotFound('Пользователь не найден'));
     }
 
     return res.status(200).json(user);
@@ -42,9 +43,9 @@ const createUser = async (req, res, next) => {
 
     const user = new User({ name, about, avatar });
 
-    await user.save();
+    const newUser = await user.save();
 
-    return res.status(201).json();
+    return res.status(201).json(newUser);
   } catch (e) {
     return next(e);
   }
@@ -67,7 +68,7 @@ const updateProfile = async (req, res, next) => {
       about,
     });
 
-    return res.status(200).json();
+    return res.status(200).json(req.body);
   } catch (e) {
     return next(e);
   }
@@ -82,7 +83,7 @@ const updateAvatar = async (req, res, next) => {
 
     await User.findByIdAndUpdate(req.user._id, { avatar });
 
-    return res.status(200).json();
+    return res.status(200).json(req.body);
   } catch (e) {
     return next(e);
   }
