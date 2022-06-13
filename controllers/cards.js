@@ -1,5 +1,4 @@
 const Card = require('../models/Card');
-const NotFound = require('../errors/NotFound');
 const CastError = require('../errors/CastError');
 
 const getCards = async (req, res, next) => {
@@ -20,6 +19,10 @@ const createCard = async (req, res, next) => {
       return next(new CastError('Не все поля заполнены'));
     }
 
+    if (name.length < 2 || name.length > 30) {
+      return next(new CastError('Некорретное имя'));
+    }
+
     const card = new Card({
       name,
       link,
@@ -38,11 +41,11 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
-    if (!card) next(new NotFound('Карточки не существует'));
+    if (!card) next(new CastError('Карточки не существует'));
 
-    const deletedCard = await Card.findByIdAndDelete(req.params.cardId);
+    await Card.findByIdAndDelete(req.params.cardId);
 
-    return res.status(204).json(deletedCard);
+    return res.status(200).json();
   } catch (e) {
     return next(e);
   }
@@ -54,7 +57,7 @@ const likeCard = async (req, res, next) => {
 
     if (!card) {
       return next(
-        new NotFound('Запрашиваемая карточка для добавления лайка не найдена'),
+        new CastError('Запрашиваемая карточка для добавления лайка не найдена'),
       );
     }
 
@@ -76,7 +79,7 @@ const dislikeCard = async (req, res, next) => {
 
     if (!card) {
       return next(
-        new NotFound('Запрашиваемая карточка для добавления лайка не найдена'),
+        new CastError('Запрашиваемая карточка для добавления лайка не найдена'),
       );
     }
 

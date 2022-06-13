@@ -1,4 +1,3 @@
-const NotFound = require('../errors/NotFound');
 const CastError = require('../errors/CastError');
 
 const User = require('../models/User');
@@ -8,7 +7,7 @@ const getUser = async (req, res, next) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return next(new NotFound('Пользователь не найден'));
+      return next(new CastError('Пользователь не найден'));
     }
 
     return res.status(200).json(user);
@@ -31,14 +30,21 @@ const createUser = async (req, res, next) => {
   try {
     const { name, about, avatar } = req.body;
 
-    if (name === undefined || about === undefined) {
+    if (name === undefined || about === undefined || avatar === undefined) {
       return next(new CastError('Не все поля заполнены'));
     }
+    if (name.length < 2 || name.length > 30) {
+      return next(new CastError('Некорретное имя'));
+    }
+    if (about.length < 2 || about.length > 30) {
+      return next(new CastError('Некорретное поле about'));
+    }
+
     const user = new User({ name, about, avatar });
 
-    const newUser = await user.save();
+    await user.save();
 
-    return res.status(201).json(newUser);
+    return res.status(201).json();
   } catch (e) {
     return next(e);
   }
@@ -47,6 +53,14 @@ const createUser = async (req, res, next) => {
 const updateProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
+
+    if (name !== undefined && (name.length < 2 || name.length > 30)) {
+      return next(new CastError('Некорретное имя'));
+    }
+
+    if (about !== undefined && (about.length < 2 || about.length > 30)) {
+      return next(new CastError('Некорретное имя'));
+    }
 
     await User.findByIdAndUpdate(req.user._id, {
       name,
@@ -66,9 +80,9 @@ const updateAvatar = async (req, res, next) => {
       return next(new CastError('Не все поля заполнены'));
     }
 
-    const userUpdate = await User.findByIdAndUpdate(req.user._id, { avatar });
+    await User.findByIdAndUpdate(req.user._id, { avatar });
 
-    return res.status(200).json(userUpdate);
+    return res.status(200).json();
   } catch (e) {
     return next(e);
   }
