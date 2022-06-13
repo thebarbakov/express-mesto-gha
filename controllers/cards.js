@@ -74,7 +74,7 @@ const likeCard = async (req, res, next) => {
 
     if (!card) {
       return next(
-        new CastError('Запрашиваемая карточка для добавления лайка не найдена'),
+        new NotFound('Запрашиваемая карточка для добавления лайка не найдена'),
       );
     }
 
