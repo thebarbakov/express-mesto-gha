@@ -7,6 +7,11 @@ const getUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
 
+    if (req.params.id.length !== 24) {
+      return next(
+        new CastError('Некорреткно указан id карточки'),
+      );
+    }
     if (!user) {
       return next(new NotFound('Пользователь не найден'));
     }

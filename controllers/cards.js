@@ -42,7 +42,7 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
-    if (card.length !== 24) {
+    if (req.params.cardId.length !== 24) {
       return next(
         new CastError('Некорреткно указан id карточки'),
       );
@@ -66,7 +66,7 @@ const likeCard = async (req, res, next) => {
   try {
     const card = await Card.findById(req.params.cardId);
 
-    if (card.length !== 24) {
+    if (req.params.cardId.length !== 24) {
       return next(
         new CastError('Некорреткно указан id карточки'),
       );
