@@ -11,6 +11,7 @@ const app = express();
 // mongoose.connect('mongodb+srv://admin:admin@mesto.rhsuxz1.mongodb.net/?retryWrites=true&w=majority', {
 //   useNewUrlParser: true,
 // });
+
 mongoose.connect('mongodb://localhost:27017/mestodb', {
   useNewUrlParser: true,
 });
