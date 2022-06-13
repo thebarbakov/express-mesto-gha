@@ -4,7 +4,7 @@ const NotFound = require('../errors/NotFound');
 
 const getCards = async (req, res, next) => {
   try {
-    const cards = await Card({});
+    const cards = await Card.find({});
 
     res.status(200).json(cards);
   } catch (e) {
@@ -40,13 +40,13 @@ const createCard = async (req, res, next) => {
 
 const deleteCard = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId);
-
     if (req.params.cardId.length !== 24) {
       return next(
         new CastError('Некорреткно указан id карточки'),
       );
     }
+
+    const card = await Card.findById(req.params.cardId);
 
     if (!card) {
       return next(
@@ -64,13 +64,13 @@ const deleteCard = async (req, res, next) => {
 
 const likeCard = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId);
-
     if (req.params.cardId.length !== 24) {
       return next(
         new CastError('Некорреткно указан id карточки'),
       );
     }
+
+    const card = await Card.findById(req.params.cardId);
 
     if (!card) {
       return next(
@@ -92,13 +92,13 @@ const likeCard = async (req, res, next) => {
 
 const dislikeCard = async (req, res, next) => {
   try {
-    const card = await Card.findById(req.params.cardId);
-
-    if (card.length !== 24) {
+    if (req.params.cardId.length !== 24) {
       return next(
         new CastError('Некорреткно указан id карточки'),
       );
     }
+
+    const card = await Card.findById(req.params.cardId);
 
     if (!card) {
       return next(

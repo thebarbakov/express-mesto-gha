@@ -5,13 +5,14 @@ const User = require('../models/User');
 
 const getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
-
-    if (req.params.id.length !== 24) {
+    if (req.params.userId.length !== 24) {
       return next(
-        new CastError('Некорреткно указан id карточки'),
+        new CastError('Некорреткно указан id пользователя'),
       );
     }
+
+    const user = await User.findById(req.params.userId);
+
     if (!user) {
       return next(new NotFound('Пользователь не найден'));
     }
