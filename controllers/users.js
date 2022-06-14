@@ -5,12 +5,6 @@ const User = require('../models/User');
 
 const getUser = async (req, res, next) => {
   try {
-    if (req.params.userId.length !== 24) {
-      return next(
-        new CastError('Некорреткно указан id пользователя'),
-      );
-    }
-
     const user = await User.findById(req.params.userId);
 
     if (!user) {
@@ -19,6 +13,9 @@ const getUser = async (req, res, next) => {
 
     return res.status(200).json(user);
   } catch (e) {
+    if (e.name === 'CastError') {
+      return next(new CastError('Некорректно указан id пользователя'));
+    }
     return next(e);
   }
 };
@@ -37,22 +34,15 @@ const createUser = async (req, res, next) => {
   try {
     const { name, about, avatar } = req.body;
 
-    if (name === undefined || about === undefined || avatar === undefined) {
-      return next(new CastError('Не все поля заполнены'));
-    }
-    if (name.length < 2 || name.length > 30) {
-      return next(new CastError('Некорретное имя'));
-    }
-    if (about.length < 2 || about.length > 30) {
-      return next(new CastError('Некорретное поле about'));
-    }
-
     const user = new User({ name, about, avatar });
 
     const newUser = await user.save();
 
     return res.status(201).json(newUser);
   } catch (e) {
+    if (e.name === 'ValidationError') {
+      return next(new CastError('Переданы некорректные данные'));
+    }
     return next(e);
   }
 };
@@ -61,21 +51,20 @@ const updateProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
 
-    if (name !== undefined && (name.length < 2 || name.length > 30)) {
-      return next(new CastError('Некорретное имя'));
-    }
-
-    if (about !== undefined && (about.length < 2 || about.length > 30)) {
-      return next(new CastError('Некорретное имя'));
-    }
-
-    await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(req.user._id, {
       name,
       about,
     });
 
+    if (!user) {
+      return next(new NotFound('Пользователь не найден'));
+    }
+
     return res.status(200).json(req.body);
   } catch (e) {
+    if (e.name === 'ValidationError') {
+      return next(new CastError('Переданы некорректные данные'));
+    }
     return next(e);
   }
 };
@@ -83,14 +72,18 @@ const updateProfile = async (req, res, next) => {
 const updateAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
-    if (avatar === undefined) {
-      return next(new CastError('Не все поля заполнены'));
-    }
 
-    await User.findByIdAndUpdate(req.user._id, { avatar });
+    const user = await User.findByIdAndUpdate(req.user._id, { avatar });
+
+    if (!user) {
+      return next(new NotFound('Пользователь не найден'));
+    }
 
     return res.status(200).json(req.body);
   } catch (e) {
+    if (e.name === 'ValidationError') {
+      return next(new CastError('Переданы некорректные данные'));
+    }
     return next(e);
   }
 };
