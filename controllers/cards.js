@@ -54,7 +54,7 @@ const deleteCard = async (req, res, next) => {
 
 const likeCard = async (req, res, next) => {
   try {
-    const card = await Card.indOneAndUpdate(
+    const card = await Card.findOneAndUpdate(
       { _id: req.params.cardId },
       { $push: { likes: req.user._id } },
       { new: true, runValidators: true },
