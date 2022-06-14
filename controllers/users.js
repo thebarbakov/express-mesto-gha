@@ -32,6 +32,7 @@ const getUsers = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   try {
+    console.log(req.body);
     const { name, about, avatar } = req.body;
 
     const user = new User({ name, about, avatar });
@@ -51,10 +52,14 @@ const updateProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
 
-    const user = await User.findOneAndUpdate({ _id: req.user._id }, {
-      name,
-      about,
-    });
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      {
+        name,
+        about,
+      },
+      { new: true, runValidators: true },
+    );
 
     if (!user) {
       return next(new NotFound('Пользователь не найден'));
@@ -73,7 +78,11 @@ const updateAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
 
-    const user = await User.findOneAndUpdate({ _id: req.user._id }, { avatar });
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { avatar },
+      { new: true, runValidators: true },
+    );
 
     if (!user) {
       return next(new NotFound('Пользователь не найден'));

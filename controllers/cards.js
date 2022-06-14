@@ -57,7 +57,7 @@ const likeCard = async (req, res, next) => {
     const card = await Card.indOneAndUpdate(
       { _id: req.params.cardId },
       { $push: { likes: req.user._id } },
-      { new: true },
+      { new: true, runValidators: true },
     );
     if (!card) {
       return next(
@@ -78,7 +78,7 @@ const dislikeCard = async (req, res, next) => {
     const card = await Card.findOneAndUpdate(
       { _id: req.params.cardId },
       { $pull: { likes: req.user._id } },
-      { new: true },
+      { new: true, runValidators: true },
     );
     if (!card) {
       return next(
