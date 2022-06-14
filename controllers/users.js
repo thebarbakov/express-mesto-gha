@@ -51,7 +51,7 @@ const updateProfile = async (req, res, next) => {
   try {
     const { name, about } = req.body;
 
-    const user = await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findOneAndUpdate({ _id: req.user._id }, {
       name,
       about,
     });
@@ -73,7 +73,7 @@ const updateAvatar = async (req, res, next) => {
   try {
     const { avatar } = req.body;
 
-    const user = await User.findByIdAndUpdate(req.user._id, { avatar });
+    const user = await User.findOneAndUpdate({ _id: req.user._id }, { avatar });
 
     if (!user) {
       return next(new NotFound('Пользователь не найден'));
