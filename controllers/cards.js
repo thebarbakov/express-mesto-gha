@@ -45,7 +45,7 @@ const deleteCard = async (req, res, next) => {
 
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'ValidationError') {
+    if (e.name === 'CastError') {
       return next(new CastError('Передан некорректный ID карточки'));
     }
     return next(e);
@@ -66,7 +66,7 @@ const likeCard = async (req, res, next) => {
     }
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'ValidationError') {
+    if (e.name === 'CastError') {
       return next(new CastError('Передан некорректный ID карточки'));
     }
     return next(e);
@@ -87,7 +87,7 @@ const dislikeCard = async (req, res, next) => {
     }
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'ValidationError') {
+    if (e.name === 'CastError') {
       return next(new CastError('Передан некорректный ID карточки'));
     }
     return next(e);
