@@ -5,7 +5,7 @@ const cookieParser = require('cookie-parser');
 const errorHandler = require('./errors/ServerError');
 const NotFound = require('./errors/NotFound');
 const { login, createUser } = require('./controllers/users');
-const { auth } = require('./middlewares/auth');
+const { userAuth } = require('./middlewares/auth');
 
 const { PORT = 3000 } = process.env;
 
@@ -25,7 +25,7 @@ app.use(cookieParser());
 app.post('/signin', login);
 app.post('/signup', createUser);
 
-app.use(auth);
+app.use(userAuth);
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
