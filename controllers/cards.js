@@ -1,6 +1,6 @@
 const Card = require('../models/Card');
 const NotFound = require('../errors/NotFound');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const ForbiddenError = require('../errors/ForbiddenError');
 
 const getCards = async (req, res, next) => {
   try {
@@ -41,7 +41,7 @@ const deleteCard = async (req, res, next) => {
     }
 
     if (card.owner._id.toString() !== req.user._id.toString()) {
-      return next(new UnauthorizedError('Карточка недоступна для удаления'));
+      return next(new ForbiddenError('Карточка недоступна для удаления'));
     }
 
     await Card.findOneAndDelete({ _id: req.params.cardId });
