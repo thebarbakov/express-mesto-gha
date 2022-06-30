@@ -30,7 +30,7 @@ const login = async (req, res, next) => {
     return res.status(200).cookie('jwt', token, {
       maxAge: 604800,
       httpOnly: true,
-    }).send(token);
+    }).send({ token });
   } catch (e) {
     return next(e);
   }
