@@ -27,9 +27,6 @@ const createCard = async (req, res, next) => {
 
     return res.status(201).json(newCard);
   } catch (e) {
-    if (e.name === 'ValidationError') {
-      return next(new CastError('Переданы некорректные данные'));
-    }
     return next(e);
   }
 };

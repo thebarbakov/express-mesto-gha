@@ -14,10 +14,16 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email, password });
+    const user = await User.findOne({ email }, '+password');
 
     if (!user) {
-      return next(new UnauthorizedError('Email или пароль не верен'));
+      return next(new UnauthorizedError('Неверный email'));
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return next(new UnauthorizedError('Пароль не верен'));
     }
 
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
@@ -25,7 +31,7 @@ const login = async (req, res, next) => {
     return res.status(200).cookie('jwt', token, {
       maxAge: 604800,
       httpOnly: true,
-    });
+    }).end();
   } catch (e) {
     return next(e);
   }
@@ -50,6 +56,10 @@ const createUser = async (req, res, next) => {
     });
 
     const newUser = await user.save();
+
+    newUser.password = undefined;
+
+    console.log(newUser);
 
     return res.status(201).json(newUser);
   } catch (e) {

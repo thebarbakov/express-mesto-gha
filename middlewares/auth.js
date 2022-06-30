@@ -5,7 +5,7 @@ const { JWT_SECRET = 'JWT_SECRET' } = process.env;
 
 const userAuth = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt || req.headers.authorization.split(' ')[1];
+    const token = req.cookies.jwt || req.headers.authorization !== undefined ? req.headers.authorization.split(' ')[1] : null;
 
     if (!token) {
       return next(new UnauthorizedError('Необходима авторизация'));
@@ -16,6 +16,8 @@ const userAuth = async (req, res, next) => {
     if (!userInfo) {
       return next(new UnauthorizedError('Необходима авторизация'));
     }
+
+    req.user = userInfo;
 
     return next();
   } catch (e) {
