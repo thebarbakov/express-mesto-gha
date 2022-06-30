@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 
-const CastError = require('../errors/CastError');
 const NotFound = require('../errors/NotFound');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
@@ -80,9 +79,6 @@ const getUser = async (req, res, next) => {
 
     return res.status(200).json(user);
   } catch (e) {
-    if (e.name === 'CastError') {
-      return next(new CastError('Некорректно указан id пользователя'));
-    }
     return next(e);
   }
 };
@@ -116,9 +112,6 @@ const updateProfile = async (req, res, next) => {
 
     return res.status(200).json(req.body);
   } catch (e) {
-    if (e.name === 'ValidationError') {
-      return next(new CastError('Переданы некорректные данные'));
-    }
     return next(e);
   }
 };
@@ -139,9 +132,6 @@ const updateAvatar = async (req, res, next) => {
 
     return res.status(200).json(req.body);
   } catch (e) {
-    if (e.name === 'ValidationError') {
-      return next(new CastError('Переданы некорректные данные'));
-    }
     return next(e);
   }
 };

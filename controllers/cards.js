@@ -1,5 +1,4 @@
 const Card = require('../models/Card');
-const CastError = require('../errors/CastError');
 const NotFound = require('../errors/NotFound');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
@@ -35,23 +34,20 @@ const deleteCard = async (req, res, next) => {
   try {
     const card = await Card.findOne({ _id: req.params.cardId });
 
-    if (card.owner._id.toString() !== req.user._id.toString()) {
-      return next(new UnauthorizedError('Карточка недоступна для удаления'));
-    }
-
-    const deletedCard = await Card.findOneAndDelete({ _id: req.params.cardId });
-
-    if (!deletedCard) {
+    if (!card) {
       return next(
         new NotFound('Запрашиваемая карточка для удаления не найдена'),
       );
     }
 
+    if (card.owner._id.toString() !== req.user._id.toString()) {
+      return next(new UnauthorizedError('Карточка недоступна для удаления'));
+    }
+
+    await Card.findOneAndDelete({ _id: req.params.cardId });
+
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'CastError') {
-      return next(new CastError('Передан некорректный ID карточки'));
-    }
     return next(e);
   }
 };
@@ -70,9 +66,6 @@ const likeCard = async (req, res, next) => {
     }
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'CastError') {
-      return next(new CastError('Передан некорректный ID карточки'));
-    }
     return next(e);
   }
 };
@@ -91,9 +84,6 @@ const dislikeCard = async (req, res, next) => {
     }
     return res.status(200).json();
   } catch (e) {
-    if (e.name === 'CastError') {
-      return next(new CastError('Передан некорректный ID карточки'));
-    }
     return next(e);
   }
 };
