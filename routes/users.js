@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const { celebrate, Joi } = require('celebrate');
-const { isLink } = require('../utils/isLink');
+const { linkSchedule } = require('../utils/isLink');
 
 const {
   getUser,
@@ -36,7 +36,7 @@ router.patch(
   '/me/avatar',
   celebrate({
     body: Joi.object().keys({
-      avatar: Joi.string().pattern(isLink).required(),
+      avatar: Joi.string().pattern(linkSchedule).required(),
     }),
   }),
   updateAvatar,

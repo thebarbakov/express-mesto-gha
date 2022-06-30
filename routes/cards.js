@@ -1,7 +1,7 @@
 const router = require('express').Router();
 
 const { celebrate, Joi } = require('celebrate');
-const { isLink } = require('../utils/isLink');
+const { linkSchedule } = require('../utils/isLink');
 
 const {
   getCards,
@@ -17,7 +17,7 @@ router.post(
   celebrate({
     body: Joi.object().keys({
       name: Joi.string().required().min(2).max(30),
-      link: Joi.string().required().pattern(isLink),
+      link: Joi.string().required().pattern(linkSchedule),
     }),
   }),
   createCard,

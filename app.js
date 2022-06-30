@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi } = require('celebrate');
-const { isLink } = require('./utils/isLink');
+const { linkSchedule } = require('./utils/isLink');
 
 const errorHandler = require('./errors/ServerError');
 const NotFound = require('./errors/NotFound');
@@ -14,16 +14,16 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-// mongoose.connect(
-//   'mongodb+srv://admin:admin@mesto.rhsuxz1.mongodb.net/?retryWrites=true&w=majority',
-//   {
-//     useNewUrlParser: true,
-//   },
-// );
+mongoose.connect(
+  'mongodb+srv://admin:admin@mesto.rhsuxz1.mongodb.net/?retryWrites=true&w=majority',
+  {
+    useNewUrlParser: true,
+  },
+);
 
-mongoose.connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-});
+// mongoose.connect('mongodb://localhost:27017/mestodb', {
+//   useNewUrlParser: true,
+// });
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,7 +45,7 @@ app.post(
     body: Joi.object().keys({
       name: Joi.string().min(2).max(30),
       about: Joi.string().min(2).max(30),
-      avatar: Joi.string().pattern(isLink),
+      avatar: Joi.string().pattern(linkSchedule),
       email: Joi.string().required().email(),
       password: Joi.string().required(),
     }),
