@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const NotFound = require('../errors/NotFound');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const ConflictError = require('../errors/ConflictError');
+const CastError = require('../errors/CastError');
 
 const User = require('../models/User');
 
@@ -63,7 +64,7 @@ const createUser = async (req, res, next) => {
     return res.status(201).json(newUser);
   } catch (e) {
     if (e.code === 11000) {
-      next(new ConflictError('Пользователь уже существует'));
+      return next(new ConflictError('Пользователь уже существует'));
     }
     return next(e);
   }
@@ -112,6 +113,10 @@ const updateProfile = async (req, res, next) => {
 
     return res.status(200).json(req.body);
   } catch (e) {
+    if (e.name === 'ValidationError') {
+      return next(new CastError('Неверный формат данных'));
+    }
+
     return next(e);
   }
 };
@@ -132,6 +137,10 @@ const updateAvatar = async (req, res, next) => {
 
     return res.status(200).json(req.body);
   } catch (e) {
+    if (e.name === 'ValidationError') {
+      return next(new CastError('Неверный формат данных'));
+    }
+
     return next(e);
   }
 };
